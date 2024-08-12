@@ -4,18 +4,6 @@ variable "tags" {
   type        = map(any)
 }
 
-variable "enable_key_rotation" {
-  description = "Enable key rotation"
-  default     = true
-  type        = bool
-}
-
-variable "rotation_period_in_days" {
-  description = "Days until the key rotate. Value must be between 90 and 2560. Only required if enable_key_rotation equal true"
-  default     = 365
-  type        = number
-}
-
 variable "cluster_name" {
   description = "EKS cluster name"
   type        = string
@@ -36,18 +24,6 @@ variable "enabled_cluster_log_types" {
 variable "subnet_ids" {
   description = "Subnet IDs that the cluster and node groups must be created"
   type        = list(string)
-}
-
-variable "authentication_mode" {
-  description = "EKS cluster authentication mode"
-  default     = "CONFIG_MAP"
-  type        = string
-}
-
-variable "bootstrap_cluster_creator_admin_permissions" {
-  description = "Whether or not to bootstrap the access config values to the cluster"
-  default     = true
-  type        = bool
 }
 
 variable "spot_node_group" {
@@ -88,6 +64,7 @@ variable "disk_size" {
 
 variable "instance_types" {
   description = "Nodes instance types"
+  default     = ["m5a.2xlarge", "m6a.2xlarge"]
   type        = list(string)
 }
 

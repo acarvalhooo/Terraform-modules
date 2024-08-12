@@ -34,8 +34,8 @@ data "aws_caller_identity" "current" {}
 resource "aws_kms_key" "kms_key" {
   description             = "Key used for EKS cluster ${var.cluster_name} to encrypt secrets"
   deletion_window_in_days = 30
-  enable_key_rotation     = var.enable_key_rotation
-  rotation_period_in_days = var.enable_key_rotation == true ? var.rotation_period_in_days : null
+  enable_key_rotation     = true
+  rotation_period_in_days = 365
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -68,7 +68,7 @@ resource "aws_kms_key" "kms_key" {
         Sid    = "KeyUsage"
         Effect = "Allow"
         Principal = {
-          AWS = "${aws_iam_role.cluster_role.arn}"
+          AWS = aws_iam_role.cluster_role.arn
         }
         Action = [
           "kms:Decrypt",
@@ -110,8 +110,8 @@ resource "aws_eks_cluster" "cluster" {
   }
 
   access_config {
-    authentication_mode                         = var.authentication_mode
-    bootstrap_cluster_creator_admin_permissions = var.bootstrap_cluster_creator_admin_permissions
+    authentication_mode                         = "CONFIG_MAP"
+    bootstrap_cluster_creator_admin_permissions = true
   }
 
   tags = merge(var.tags, { Name = var.cluster_name })

@@ -1,8 +1,3 @@
-output "cluster_id" {
-  description = "EKS cluster ID"
-  value       = aws_eks_cluster.cluster.id
-}
-
 output "cluster_arn" {
   description = "EKS cluster ARN"
   value       = aws_eks_cluster.cluster.arn
@@ -31,11 +26,6 @@ output "cluster_ca_certificate" {
 output "oidc_provider_arn" {
   description = "OIDC provider ARN used for EKS cluster"
   value       = aws_iam_openid_connect_provider.oidc_provider.arn
-}
-
-output "node_group_role_id" {
-  description = "Node group ID used for node groups"
-  value       = aws_iam_role.node_group_role.id
 }
 
 output "node_group_role_arn" {
