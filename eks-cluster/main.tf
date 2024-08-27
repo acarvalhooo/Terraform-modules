@@ -1,4 +1,4 @@
-# Creating role to be used for EKS cluster
+# Creating a role to be used by the EKS cluster
 resource "aws_iam_role" "cluster_role" {
   name = local.cluster_role_name
 
@@ -16,7 +16,7 @@ resource "aws_iam_role" "cluster_role" {
   tags = merge(var.tags, { Name = local.cluster_role_name })
 }
 
-# Attaching policys to the role used by EKS cluster
+# Attaching necessary policies to the role used by the EKS cluster
 resource "aws_iam_role_policy_attachment" "cluster_attachment" {
   for_each = {
     "attachment-01" = { policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy" }
@@ -30,9 +30,9 @@ resource "aws_iam_role_policy_attachment" "cluster_attachment" {
 # Getting account ID to configure as KMS key administrator
 data "aws_caller_identity" "current" {}
 
-# Creating KMS key to encrypt EKS secrets
+# Creating a KMS key for encrypting EKS cluster secrets
 resource "aws_kms_key" "kms_key" {
-  description             = "Key used for EKS cluster ${var.cluster_name} to encrypt secrets"
+  description             = "Key used by the EKS cluster ${var.cluster_name} for encrypting secrets"
   deletion_window_in_days = 30
   enable_key_rotation     = true
   rotation_period_in_days = 365
@@ -85,7 +85,7 @@ resource "aws_kms_key" "kms_key" {
   tags = merge(var.tags, { Name = local.key_name })
 }
 
-# Creating KMS key alias
+# Creating alias for the KMS key
 resource "aws_kms_alias" "kms_alias" {
   name          = local.key_name
   target_key_id = aws_kms_key.kms_key.key_id
@@ -128,7 +128,7 @@ resource "aws_iam_openid_connect_provider" "oidc_provider" {
   url             = aws_eks_cluster.cluster.identity.0.oidc.0.issuer
 }
 
-# Creating role to be used for node groups
+# Creating a role to be used by the node groups
 resource "aws_iam_role" "node_group_role" {
   name = local.node_group_role_name
 
@@ -146,7 +146,7 @@ resource "aws_iam_role" "node_group_role" {
   tags = merge(var.tags, { Name = local.node_group_role_name })
 }
 
-# Attaching policys to the role used by node groups
+# Attaching necessary policies to the role used by the node groups
 resource "aws_iam_role_policy_attachment" "node_group_attachment" {
   for_each = {
     "attachment-01" = { policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy" }
@@ -158,7 +158,7 @@ resource "aws_iam_role_policy_attachment" "node_group_attachment" {
   policy_arn = each.value.policy_arn
 }
 
-# Creating managed node group of spot instances
+# Creating managed node groups with spot instances
 resource "aws_eks_node_group" "spot_node_group" {
   count           = var.spot_node_group
   cluster_name    = aws_eks_cluster.cluster.name
@@ -180,7 +180,7 @@ resource "aws_eks_node_group" "spot_node_group" {
   tags = merge(var.tags, { Name = local.spot_node_group_name })
 }
 
-# Creating managed node group of on-demand instances
+# Creating managed node groups with on-demand instances
 resource "aws_eks_node_group" "on_demand_node_group" {
   count           = var.on_demand_node_group
   cluster_name    = aws_eks_cluster.cluster.name
